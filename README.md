@@ -8,3 +8,7 @@ A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using
 [] Multiple file selection.
 [] File transfer history.
 [] Toggle theme.
+## How to use
+1. Execute the following command in a shell/terminal - `git clone https://github.com/stunzz/Tailscale-Share.git`
+2. Now, get inside the folder - `cd Tailscale-Share`
+3. If you've Python 3 already installed then execute the following command - `python3 Tailscale-share.pyw`
