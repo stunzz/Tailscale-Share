@@ -4,10 +4,10 @@ A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using
 ## Feature
 - Transfer files to other devices on your Tailnet. (Files can only be transfered to the devices of the current user.)
 ## To-do
-[] Drag n Drop file selection.
-[] Multiple file selection.
-[] File transfer history.
-[] Toggle theme.
+[]Drag n Drop file selection.
+[]Multiple file selection.
+[]File transfer history.
+[]Toggle theme.
 ## How to use
 1. Execute the following command in a shell/terminal - `git clone https://github.com/stunzz/Tailscale-Share.git`
 2. Now, get inside the folder - `cd Tailscale-Share`
