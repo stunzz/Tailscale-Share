@@ -8,6 +8,7 @@ A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using
 - [ ] Drag n Drop file selection.
 - [ ] Multiple file selection.
 - [ ] File transfer history.
+- [ ] File server with web file browser over Tailscale Funnel.
 - [ ] Toggle theme.
 ## How to use
 1. Execute the following command in a shell/terminal - `git clone https://github.com/stunzz/Tailscale-Share.git`
