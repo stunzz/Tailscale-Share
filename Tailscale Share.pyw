@@ -25,7 +25,7 @@ class TailscaleFileSender:
             'success': '#4caf50',
             'error': '#f44336',
             'warning': '#ff9800',
-            'button_text': '#000000'  # Added black color for button text
+            'button_text': '#000000'
         }
         
         # Configure root window
@@ -85,7 +85,7 @@ class TailscaleFileSender:
         self.progress_frame = tk.LabelFrame(main_container, text="Transfer Status",
                                           bg=self.colors['bg'], fg=self.colors['fg'],
                                           padx=10, pady=10)
-        self.progress_frame.pack(fill=tk.X)
+        self.progress_frame.pack_forget()
         
         self.progress_detail_label = tk.Label(self.progress_frame, text="",
                                             bg=self.colors['bg'], fg=self.colors['fg'])
@@ -95,14 +95,11 @@ class TailscaleFileSender:
                                           mode='indeterminate',
                                           style='Custom.Horizontal.TProgressbar')
         self.progress_bar.pack()
-        
-        # Initially hide progress section
-        self.progress_frame.pack_forget()
 
         # Send button section
-        send_button = ttk.Button(main_container, text="Send File",
+        send_button = ttk.Button(main_container, text="Send Files",
                                style='Accent.TButton',
-                               command=self.send_file_with_progress,
+                               command=self.send_files_with_progress,
                                width=15)
         send_button.pack(pady=15)
 
@@ -111,6 +108,8 @@ class TailscaleFileSender:
 
         # Populate devices with a delay
         self.root.after(1000, self.populate_devices)
+
+        self.files = []
 
     def setup_styles(self):
         """Configure custom styles for widgets"""
@@ -154,10 +153,11 @@ class TailscaleFileSender:
         return None
 
     def browse_file(self):
-        """Open file browser to select a file."""
-        file_path = filedialog.askopenfilename()
+        """Open file browser to select multiple files."""
+        file_paths = filedialog.askopenfilenames()
         self.file_entry.delete(0, tk.END)
-        self.file_entry.insert(0, file_path)
+        self.file_entry.insert(0, ", ".join(file_paths))
+        self.files = file_paths
 
     def populate_devices(self):
         """Fetch and populate online Tailscale devices using multiple methods."""
@@ -231,56 +231,70 @@ class TailscaleFileSender:
             messagebox.showwarning("No Devices", 
                                  "No online Tailscale devices found. Ensure Tailscale is running and devices are online.")
 
-    def send_file_with_progress(self):
-        """Send file with indefinite progress indication."""
-        file_path = self.file_entry.get()
+    def send_files_with_progress(self):
+        """Send multiple files with progress indication."""
+        file_paths = self.files
         selected_device = self.device_dropdown.get()
         ip_address = self.device_ips.get(selected_device)
-        
-        if not file_path:
-            messagebox.showerror("Error", "Please select a file to send.")
+
+        if not file_paths:
+            messagebox.showerror("Error", "Please select one or more files to send.")
             return
-        
+
         if not ip_address:
             messagebox.showerror("Error", "Please select a recipient device.")
             return
-        
+
         self.progress_frame.pack(fill=tk.X, pady=(0, 15))
+        self.progress_detail_label.config(text="Transferring files...",
+                                         fg=self.colors['accent'])
         self.progress_bar.start(10)
-        self.progress_detail_label.config(text="Transferring file...",
-                                        fg=self.colors['accent'])
 
-        def run_transfer():
-            try:
-                command = f'tailscale file cp "{file_path}" {ip_address}:'
-                process = subprocess.Popen(
-                    command, 
-                    shell=True, 
-                    stdout=subprocess.PIPE, 
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True
-                )
+        def run_transfers():
+            total_files = len(file_paths)
+            completed_files = 0
+
+            for file_path in file_paths:
+                try:
+                    command = f'tailscale file cp "{file_path}" {ip_address}:'
+                    process = subprocess.Popen(
+                        command, 
+                        shell=True, 
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE,
+                        universal_newlines=True
+                    )
+                    
+                    stdout, stderr = process.communicate()
+                    
+                    if process.returncode == 0:
+                        completed_files += 1
+                        self.root.after(0, self.update_progress, 
+                                        completed_files, total_files)
+                    else:
+                        self.root.after(0, self.transfer_failed, 
+                                        f"Failed to send file '{os.path.basename(file_path)}':\n{stderr}")
                 
-                stdout, stderr = process.communicate()
-                
-                if process.returncode == 0:
-                    self.root.after(0, self.transfer_complete, 
-                                    f"File sent successfully to {selected_device}!")
-                else:
+                except Exception as e:
                     self.root.after(0, self.transfer_failed, 
-                                    f"Failed to send file:\n{stderr}")
-            
-            except Exception as e:
-                self.root.after(0, self.transfer_failed, f"An error occurred:\n{e}")
+                                    f"An error occurred while sending '{os.path.basename(file_path)}':\n{e}")
 
-        threading.Thread(target=run_transfer, daemon=True).start()
+            if completed_files == total_files:
+                self.root.after(0, self.transfer_complete, 
+                                f"All {total_files} files sent successfully to {selected_device}!")
+
+        threading.Thread(target=run_transfers, daemon=True).start()
+
+    def update_progress(self, completed, total):
+        """Update the progress display for multiple file transfers."""
+        self.progress_detail_label.config(text=f"Transferred {completed}/{total} files")
 
     def transfer_complete(self, message):
-        """Handle successful file transfer."""
+        """Handle successful multiple file transfer."""
         self.progress_bar.stop()
         messagebox.showinfo("Success", message)
         self.progress_detail_label.config(text="Transfer Complete!", 
-                                        fg=self.colors['success'])
+                                         fg=self.colors['success'])
         self.root.after(3000, self.progress_frame.pack_forget)
 
     def transfer_failed(self, error_message):
@@ -288,7 +302,7 @@ class TailscaleFileSender:
         self.progress_bar.stop()
         messagebox.showerror("Error", error_message)
         self.progress_detail_label.config(text="Transfer Failed", 
-                                        fg=self.colors['error'])
+                                         fg=self.colors['error'])
         self.root.after(3000, self.progress_frame.pack_forget)
 
 def main():
