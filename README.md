@@ -14,6 +14,8 @@ A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using
 - [ ] File transfer retry/cancel.
 - [ ] Auto-refresh device list.
 - [ ] Zip and send.
+- [ ] Error logging.
+- [ ] Localisation.
 ## How to use
 1. Execute the following command in a shell/terminal - `git clone https://github.com/stunzz/Tailscale-Share.git`
 2. Now, get inside the folder - `cd Tailscale-Share`
