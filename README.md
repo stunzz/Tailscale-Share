@@ -10,6 +10,7 @@ A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using
 - [ ] File transfer history.
 - [ ] File server with web file browser over Tailscale Funnel.
 - [ ] Toggle theme.
+- [ ] Multi-Device sending.
 ## How to use
 1. Execute the following command in a shell/terminal - `git clone https://github.com/stunzz/Tailscale-Share.git`
 2. Now, get inside the folder - `cd Tailscale-Share`
