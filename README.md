@@ -3,7 +3,7 @@
 A simple GUI Frontend written in plain Python for Tailscale cmd tool. Been using Tailscale for years, don't know why never took the plunge to write a simple utility to facilitate my own work. Ahhh laziness. Nevertheless, the utility is here. The app/programme simply executes sub-processes in a shell. The GUI is built on the infamous Tkinter. 
 
 ## Feature
-- Transfer files to other devices on your Tailnet. (Files can only be transfered to the devices of the current user.)
+- Transfer files to other devices on your Tailnet. (Files can only be transfered to the devices of the current user. This is limitation is from Tailscale side.)
 ## To-do
 - [ ] Drag n Drop file selection.
 - [x] Multiple file selection.
