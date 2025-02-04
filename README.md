@@ -23,4 +23,4 @@ _Make sure you've Tailscale already installed.
 3. If you've Python 3 already installed then execute the following command - `python3 Tailscale-share.pyw`
 --
 ## Important Info
-_This utility is built with the help of free AI tools available like; ChatGPT, Claude Haiku, Code Llama etc. So they may contain vulnerabilities which I may have overlooked. Hence, it is advised to go through the entire code yourself as well. And if you find one, please report it immediately._
+_This utility is built with the help of free AI tools available like; ChatGPT, Claude Haiku, Deepseek R1, etc. So they may contain vulnerabilities which I may have overlooked. Hence, it is advised to go through the entire code yourself as well. And if you find one, please report it immediately._
